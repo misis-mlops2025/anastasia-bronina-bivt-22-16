@@ -1,9 +1,9 @@
-def sum_two_numbers(a: int, b: int):
-	return a + b;
+def sum_three_numbers(a: int, b: int, c: int):
+	return a + b + c;
 
 def main():
-	a, b = map(int, input().split())
-	print(sum_two_numbers(a, b))
+	a, b, c = map(int, input().split())
+	print(sum_three_numbers(a, b, c))
 
 if __name__ == '__main__':
 	main()
