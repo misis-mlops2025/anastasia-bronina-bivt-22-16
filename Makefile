@@ -2,7 +2,9 @@
 # GLOBALS                                                                       #
 #################################################################################
 
-PROJECT_NAME = anastasia-bronina-bivt-22-16
+REPO_NAME = anastasia-bronina-bivt-22-16
+PROJECT_NAME = my_project
+TESTS_FOLDER = tests
 PYTHON_VERSION = 3.14
 PYTHON_INTERPRETER = python
 
@@ -15,16 +17,12 @@ PYTHON_INTERPRETER = python
 .PHONY: requirements
 requirements:
 	uv sync
-	
-
-
 
 ## Delete all compiled Python files
 .PHONY: clean
 clean:
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
-
 
 ## Lint using ruff (use `make format` to do formatting)
 .PHONY: lint
@@ -38,13 +36,21 @@ format:
 	ruff check --fix
 	ruff format
 
-
-
 ## Run tests
 .PHONY: test
 test:
 	python -m pytest tests
 
+## Run coverage check
+.PHONY: coverage
+coverage:
+	coverage run -m pytest
+	coverage report -m
+
+## Run pylint check
+.PHONY: pylint
+pylint:
+	pylint $(PROJECT_NAME) $(TESTS_FOLDER)
 
 ## Set up Python interpreter environment
 .PHONY: create_environment
@@ -53,8 +59,6 @@ create_environment:
 	@echo ">>> New uv virtual environment created. Activate with:"
 	@echo ">>> Windows: .\\\\.venv\\\\Scripts\\\\activate"
 	@echo ">>> Unix/macOS: source ./.venv/bin/activate"
-	
-
 
 
 #################################################################################

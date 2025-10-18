@@ -1,32 +1,48 @@
-from pathlib import Path
+"""Pydantic configuration"""
 
-from dotenv import load_dotenv
-from loguru import logger
+from __future__ import annotations
 
-# Load environment variables from .env file if it exists
-load_dotenv()
+from typing import Literal
 
-# Paths
-PROJ_ROOT = Path(__file__).resolve().parents[1]
-logger.info(f"PROJ_ROOT path is: {PROJ_ROOT}")
+from pydantic import BaseModel, Field, PositiveInt, confloat
 
-DATA_DIR = PROJ_ROOT / "data"
-RAW_DATA_DIR = DATA_DIR / "raw"
-INTERIM_DATA_DIR = DATA_DIR / "interim"
-PROCESSED_DATA_DIR = DATA_DIR / "processed"
-EXTERNAL_DATA_DIR = DATA_DIR / "external"
 
-MODELS_DIR = PROJ_ROOT / "models"
+class DataConfig(BaseModel):
+    """Configuration for synthetic dataset generation and splitting"""
 
-REPORTS_DIR = PROJ_ROOT / "reports"
-FIGURES_DIR = REPORTS_DIR / "figures"
+    n_samples: PositiveInt = Field(1000, description="Number of synthetic samples")
+    n_features: PositiveInt = Field(20, description="Total number of features")
+    n_informative: PositiveInt = Field(5, description="Number of informative features")
+    n_redundant: int = Field(2, description="Number of redundant features")
+    n_repeated: int = Field(0, description="Number of repeated features")
+    n_classes: PositiveInt = Field(2, description="Number of target classes")
+    class_sep: confloat(gt=0.0) = Field(1.0, description="Separation between classes")
+    random_state: int = Field(42, description="Random seed for reproducibility")
+    test_size: confloat(gt=0.0, lt=1.0) = Field(0.2, description="Test set fraction")
 
-# If tqdm is installed, configure loguru with tqdm.write
-# https://github.com/Delgan/loguru/issues/135
-try:
-    from tqdm import tqdm
 
-    logger.remove(0)
-    logger.add(lambda msg: tqdm.write(msg, end=""), colorize=True)
-except ModuleNotFoundError:
-    pass
+class ModelConfig(BaseModel):
+    """Model selection and hyperparameters"""
+
+    model_type: Literal["logreg", "rf", "dt"] = Field("logreg", description="Model type")
+    max_iter: PositiveInt = Field(100, description="Max iterations for logistic regression")
+    random_state: int = Field(42, description="Random seed for model")
+    n_estimators: PositiveInt = Field(100, description="Number of trees for RF")
+    max_depth: int | None = Field(None, description="Max depth for tree-based models")
+
+
+class TrainConfig(BaseModel):
+    """Training-related configuration containing data and model subconfigs"""
+
+    data: DataConfig = DataConfig()
+    model: ModelConfig = ModelConfig()
+    scoring: str = Field("f1", description="Scoring metric for evaluation")
+
+
+class AppConfig(BaseModel):
+    """Application config"""
+
+    train: TrainConfig = TrainConfig()
+
+
+DEFAULT_CONFIG = AppConfig()

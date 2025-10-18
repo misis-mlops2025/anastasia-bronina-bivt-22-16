@@ -1,1 +1,1 @@
-from my_project import config  # noqa: F401
+"""Top-level package for the project"""
