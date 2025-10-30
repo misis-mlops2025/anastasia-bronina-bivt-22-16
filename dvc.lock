@@ -1,0 +1,125 @@
+schema: '2.0'
+stages:
+  generate:
+    cmd: python scripts/generate_cli.py
+    deps:
+    - path: configs/config.yaml
+      hash: md5
+      md5: 763a0fbc6211b27d08d9d89cfd7ee839
+      size: 542
+    - path: my_project/config.py
+      hash: md5
+      md5: 081f9fbee3573b913142dd09f5448348
+      size: 2589
+    - path: my_project/dataset.py
+      hash: md5
+      md5: a409dddf4353cfe98ac728faf8b5003e
+      size: 1271
+    - path: scripts/generate_cli.py
+      hash: md5
+      md5: 5ea146c1b3281f274405633261b89702
+      size: 953
+    params:
+      params.yaml:
+        train.data.class_sep: 1.0
+        train.data.n_classes: 2
+        train.data.n_features: 12
+        train.data.n_informative: 6
+        train.data.n_redundant: 2
+        train.data.n_repeated: 0
+        train.data.n_samples: 500
+        train.data.random_state: 42
+        train.data.test_size: 0.2
+    outs:
+    - path: data/processed/X.csv
+      hash: md5
+      md5: 099099867477b260f4ab26ceb9794850
+      size: 117005
+    - path: data/processed/y.csv
+      hash: md5
+      md5: ae3bb7447bffcc24bc05535386a3daa2
+      size: 1007
+  train:
+    cmd: python scripts/train_cli.py
+    deps:
+    - path: configs/config.yaml
+      hash: md5
+      md5: 763a0fbc6211b27d08d9d89cfd7ee839
+      size: 542
+    - path: data/processed/X.csv
+      hash: md5
+      md5: 099099867477b260f4ab26ceb9794850
+      size: 117005
+    - path: data/processed/y.csv
+      hash: md5
+      md5: ae3bb7447bffcc24bc05535386a3daa2
+      size: 1007
+    - path: my_project/config.py
+      hash: md5
+      md5: 081f9fbee3573b913142dd09f5448348
+      size: 2589
+    - path: my_project/modeling/train.py
+      hash: md5
+      md5: 7ff68766eeddb660eb31a051aa2c1a41
+      size: 4093
+    - path: scripts/train_cli.py
+      hash: md5
+      md5: ae78a207e639a26a6ab8f1f29b30a070
+      size: 820
+    params:
+      params.yaml:
+        train.model.max_depth: 6
+        train.model.max_iter: 200
+        train.model.model_type: rf
+        train.model.n_estimators: 50
+        train.model.random_state: 42
+        train.model_output: models/dvc_model.pickle
+    outs:
+    - path: models/dvc_model.pickle
+      hash: md5
+      md5: e4126401182face4ecaa5a07a538da72
+      size: 226381
+  evaluate:
+    cmd: python scripts/evaluate_cli.py
+    deps:
+    - path: configs/config.yaml
+      hash: md5
+      md5: 763a0fbc6211b27d08d9d89cfd7ee839
+      size: 542
+    - path: data/processed/X.csv
+      hash: md5
+      md5: 099099867477b260f4ab26ceb9794850
+      size: 117005
+    - path: data/processed/y.csv
+      hash: md5
+      md5: ae3bb7447bffcc24bc05535386a3daa2
+      size: 1007
+    - path: models/dvc_model.pickle
+      hash: md5
+      md5: e4126401182face4ecaa5a07a538da72
+      size: 226381
+    - path: my_project/config.py
+      hash: md5
+      md5: 081f9fbee3573b913142dd09f5448348
+      size: 2589
+    - path: my_project/modeling/predict.py
+      hash: md5
+      md5: b180235523c24e6e2fa1051d14e0f5f6
+      size: 491
+    - path: my_project/modeling/train.py
+      hash: md5
+      md5: 7ff68766eeddb660eb31a051aa2c1a41
+      size: 4093
+    - path: scripts/evaluate_cli.py
+      hash: md5
+      md5: 431d972d4ff67b8de5852b4981d82c38
+      size: 1321
+    params:
+      params.yaml:
+        train.metrics_output: metrics/metrics.json
+        train.model_output: models/dvc_model.pickle
+    outs:
+    - path: metrics/metrics.json
+      hash: md5
+      md5: 069a38cd13d5aa9451f93ab0243c2ca8
+      size: 44
