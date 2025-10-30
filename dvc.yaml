@@ -1,0 +1,57 @@
+stages:
+  generate:
+    cmd: python scripts/generate_cli.py
+    deps:
+      - scripts/generate_cli.py
+      - my_project/dataset.py
+      - my_project/config.py
+      - configs/config.yaml
+    params:
+      - train.data.n_samples
+      - train.data.n_features
+      - train.data.n_informative
+      - train.data.n_redundant
+      - train.data.n_repeated
+      - train.data.n_classes
+      - train.data.class_sep
+      - train.data.random_state
+      - train.data.test_size
+    outs:
+      - data/processed/X.csv
+      - data/processed/y.csv
+
+  train:
+    cmd: python scripts/train_cli.py
+    deps:
+      - scripts/train_cli.py
+      - my_project/modeling/train.py
+      - my_project/config.py
+      - data/processed/X.csv
+      - data/processed/y.csv
+      - configs/config.yaml
+    params:
+      - train.model.model_type
+      - train.model.n_estimators
+      - train.model.max_depth
+      - train.model.max_iter
+      - train.model.random_state
+      - train.model_output
+    outs:
+      - ${train.model_output}
+
+  evaluate:
+    cmd: python scripts/evaluate_cli.py
+    deps:
+      - scripts/evaluate_cli.py
+      - my_project/modeling/predict.py
+      - my_project/modeling/train.py
+      - my_project/config.py
+      - ${train.model_output}
+      - data/processed/X.csv
+      - data/processed/y.csv
+      - configs/config.yaml
+    params:
+      - train.model_output
+      - train.metrics_output
+    outs:
+      - ${train.metrics_output}

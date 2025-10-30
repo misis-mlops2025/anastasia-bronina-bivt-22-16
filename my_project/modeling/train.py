@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 from typing import Any, Dict, Tuple
 
-import joblib
+import  pickle
 import numpy as np
 import pandas as pd
 from pydantic import ValidationError
@@ -93,9 +93,10 @@ def evaluate_model(y_true: pd.Series, y_pred: np.ndarray) -> Dict[str, float]:
 
 
 def save_model(model: Any, path: str) -> None:
-    """Persist trained model to ``path`` using joblib"""
+    """Persist trained model to ``path`` using pickle"""
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    joblib.dump(model, path)
+    with open(path, 'wb') as file:
+        pickle.dump(model, file)
 
 
 def train_and_evaluate(
@@ -117,7 +118,7 @@ def train_and_evaluate(
     metrics = evaluate_model(y_test, preds)
 
     if model_output is None:
-        model_output = os.path.join("models", f"model_{cfg.model.model_type}.joblib")
+        model_output = os.path.join("models", f"model_{cfg.model.model_type}.pickle")
     save_model(model, model_output)
 
     _LOG.info("Training finished. Metrics: %s. Model saved to %s", metrics, model_output)

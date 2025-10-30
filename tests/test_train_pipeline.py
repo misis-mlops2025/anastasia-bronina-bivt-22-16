@@ -16,7 +16,7 @@ def test_train_pipeline_saves_model_for_all_model_types(model_type, tmp_path):
     model_cfg = ModelConfig(model_type=model_type, n_estimators=10, max_iter=50)
     cfg = TrainConfig(data=data_cfg, model=model_cfg)
 
-    out = tmp_path / f"model_{model_type}.joblib"
+    out = tmp_path / f"model_{model_type}.pickle"
     metrics, model_path = train_and_evaluate(cfg=cfg, model_output=str(out))
     assert "accuracy" in metrics and "f1" in metrics, "Metrics should include accuracy and f1"
     assert Path(model_path).exists(), "Model file should be created"
@@ -32,13 +32,13 @@ def _train_with_temp_yaml(yaml_text: str, tmp_path: Path, monkeypatch) -> tuple:
 
     sig = inspect.signature(train_and_evaluate)
     if "config_path" in sig.parameters:
-        out_model = tmp_path / "out_model_explicit.joblib"
+        out_model = tmp_path / "out_model_explicit.pickle"
         metrics, model_path = train_and_evaluate(cfg=None,
                                                  model_output=str(out_model),
                                                  config_path=str(yaml_path))
     else:
         monkeypatch.chdir(project_dir)
-        out_model = project_dir / "out_model_chdir.joblib"
+        out_model = project_dir / "out_model_chdir.pickle"
         metrics, model_path = train_and_evaluate(cfg=None, model_output=str(out_model))
     return metrics, Path(model_path)
 
@@ -71,7 +71,7 @@ def test_train_fallbacks_to_default_when_config_missing(tmp_path, monkeypatch):
     project_dir.mkdir()
 
     sig = inspect.signature(train_and_evaluate)
-    out = project_dir / "model_fallback.joblib"
+    out = project_dir / "model_fallback.pickle"
     if "config_path" in sig.parameters:
         metrics, model_path = train_and_evaluate(cfg=None,
                                                  model_output=str(out),

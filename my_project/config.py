@@ -29,6 +29,8 @@ class ModelConfig(BaseModel):
     random_state: int = Field(42, description="Random seed for model")
     n_estimators: PositiveInt = Field(100, description="Number of trees for RF")
     max_depth: int | None = Field(None, description="Max depth for tree-based models")
+    n_jobs: int | None = Field(None, description="Number of jobs for tree-based estimators")
+    format: str = Field("pickle", description="Model serialization format: joblib or pickle")
 
 
 class TrainConfig(BaseModel):
@@ -37,6 +39,12 @@ class TrainConfig(BaseModel):
     data: DataConfig = DataConfig()
     model: ModelConfig = ModelConfig()
     scoring: str = Field("f1", description="Scoring metric for evaluation")
+
+    processed_data_dir: str = Field("data/processed", description="Directory for processed dataset (X.csv, y.csv)")
+    processed_files: dict = Field({"X": "X.csv", "y": "y.csv"}, description="Filenames for processed data")
+    model_output: str = Field("models/model.pickle", description="Where to write the trained model")
+    metrics_output: str = Field("metrics/metrics.json", description="Where to write evaluation metrics")
+    logging_level: str = Field("INFO", description="Logging level (INFO/DEBUG/etc.)")
 
 
 class AppConfig(BaseModel):

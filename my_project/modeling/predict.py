@@ -4,13 +4,14 @@ from __future__ import annotations
 
 from typing import Any
 
-import joblib
+import pickle
 import pandas as pd
 
 
 def load_model(path: str) -> Any:
-    """Load a joblib model from disk"""
-    return joblib.load(path)
+    """Load a pickle model from disk"""
+    with open(path, 'rb') as file:
+        return pickle.load(file)
 
 
 def predict_from_model(model: Any, x: pd.DataFrame) -> pd.Series:

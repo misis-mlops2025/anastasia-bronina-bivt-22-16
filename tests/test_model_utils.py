@@ -63,7 +63,7 @@ def test_save_and_load_model_and_predict(tmp_path):
 
     x, y = generate_dataset(cfg.data)
     model.fit(x, y)
-    out = tmp_path / "subdir" / "model.joblib"
+    out = tmp_path / "subdir" / "model.pickle"
     save_model(model, str(out))
     assert out.exists()
 
